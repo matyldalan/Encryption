@@ -1,0 +1,428 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+
+using namespace std;
+
+
+inline int sprawdz(char znak)
+{
+    if (znak >= 'a' && znak <= 'z') return 0;
+    if (znak >= 'A' && znak <= 'Z') return 1;
+    else return 2;
+}
+
+
+
+void szyfrujPlik(string& dane, int klucz)
+{
+    int wielkosc;
+    string a;
+    string z;
+    if (klucz > 26) klucz = klucz % 26;
+    for (int i = 0; i < dane.length(); i++)
+    {
+        if (dane[i] < 'a' && dane[i] > 'z') continue;
+        if (dane[i] < 'A' && dane[i] > 'Z') continue;
+        wielkosc = sprawdz(dane[i]);
+        if (wielkosc < 2) {
+            if (wielkosc == 0) {
+                a = 'a';
+                z = 'z';
+                dane[i] = (dane[i] - 'a' + klucz) % 26 + 'a';
+            }
+            else if (wielkosc == 1) {
+                a = 'A';
+                z = 'Z';
+                dane[i] = (dane[i] - 'A' + klucz) % 26 + 'A';
+
+            }
+        }
+    }
+}
+
+void deszyfrujPlik(string& dane, int klucz)
+{
+    int wielkosc;
+    string a;
+    string z;
+    if (klucz > 26)klucz = klucz % 26;
+    for (int i = 0; i < dane.length(); i++)
+    {
+        if (dane[i] < 'a' && dane[i] > 'z') continue;
+        if (dane[i] < 'A' && dane[i] > 'Z') continue;
+        wielkosc = sprawdz(dane[i]);
+        if (wielkosc < 2) {
+            if (wielkosc == 0) {
+                a = 'a';
+                z = 'z';
+                dane[i] = (dane[i] - 'z' - klucz) % 26 + 'z';
+
+            }
+            else if (wielkosc == 1) {
+                a = 'A';
+                z = 'Z';
+                dane[i] = (dane[i] - 'Z' - klucz) % 26 + 'Z';
+
+            }
+        }
+    }
+}
+
+
+void wyswietlanieLinii(string nazwaPliku1, string nazwaPliku2) {
+    int k;
+    string linie;
+    string jeden;
+    string dwa;
+    string trzy;
+    string cztery;
+    string linieKolejne;
+    fstream plikLinie(nazwaPliku2, ios::in);
+    fstream plikKolejny(nazwaPliku1, ios::in);
+    fstream linie1;
+    fstream linie2;
+    fstream linie3;
+    fstream linie4;
+    linie1.open("linie1.txt", ios::out);
+    if (linie1.good() == true)
+        cout << endl << "Ile linii chcesz zobaczyc?" << endl;
+    cin >> k;
+    cout << endl << endl;
+    if (!plikLinie.eof()) {
+        for (int i = 0; i < k; i++) {
+            getline(plikLinie, linie);
+            cout << linie << endl;
+            linie1 << linie << endl;
+        }
+    }
+    int znak = 0;
+    linie2.open("linie2.txt", ios::out);
+    linie3.open("linie3.txt", ios::out);
+    linie4.open("linie4.txt", ios::out);
+    if (linie2.good() == true && linie3.good() == true && linie4.good() == true)
+        while (znak == 0 && (!plikLinie.eof() && !plikKolejny.eof())) {
+            cout << endl << endl << "0- kolejna linia" << endl << "1-zmiana pliku" << endl<<"2-przejscie do menu"<<endl << endl;
+            int znak1;
+            cin >> znak1;
+            znak = znak1;
+            cout << endl << endl;
+            if (znak == 0) {
+                getline(plikLinie, linie);
+                cout << linie << endl;
+                linie1 << linie << endl;
+                k++;
+            }
+            if (znak == 1) {
+                if (!plikKolejny.eof()) {
+                    for (int i = 0; i < k; i++) {
+                        getline(plikKolejny, linieKolejne);
+                        cout << linieKolejne << endl;
+                        linie2 << linieKolejne << endl;
+                    }
+                }
+            }
+            if (znak!= 0 && znak!=1) {
+                cout << "Przechodzisz do menu" << endl << endl;
+                if (!plikKolejny.eof()) {
+                    for (int i = 0; i < k; i++) {
+                        getline(plikKolejny, linieKolejne);
+                        linie2 << linieKolejne << endl;
+                    }
+                }
+            }
+        }
+    while (!plikLinie.eof()) {
+        getline(plikLinie, linie);
+        linie3 << linie << endl;
+    }
+    while (!plikKolejny.eof()) {
+        getline(plikKolejny, linieKolejne);
+        linie4 << linieKolejne << endl;
+    }
+
+    linie1.close();
+    linie2.close();
+    linie3.close();
+    linie4.close();
+    int menu = 9;
+    while (menu != 0) {
+        linie1.open("linie1.txt", ios::in);
+        linie2.open("linie2.txt", ios::in);
+        linie3.open("linie3.txt", ios::in);
+        linie4.open("linie4.txt", ios::in);
+        if (linie1.good() == true && linie2.good() == true && linie3.good() == true && linie4.good() == true)
+            cout << endl << "Co chcesz zobaczyc?" << endl;
+        cout << "1- pierwsza strone pliku wyjsciowego" << endl << "2- druga strone pliku wyjsciowego";
+        cout << endl << "3- pierwsza strone pliku wejsciowego" << endl << "4-druga strone pliku wejsciowego" << endl;
+        cout << "0-koniec przegladania" << endl;
+        cin >> menu;
+        system("cls");
+        cout << endl << endl << endl;
+        switch (menu) {
+        case 1:
+            while (!linie1.eof()) {
+                getline(linie1, jeden);
+                cout << jeden << endl;
+            }
+            break;
+        case 2:
+            while (!linie3.eof()) {
+                getline(linie3, trzy);
+                cout << trzy << endl;
+            }
+            break;
+        case 3:
+            while (!linie2.eof()) {
+                getline(linie2, dwa);
+                cout << dwa << endl;
+            }
+            break;
+        case 4:
+            while (!linie4.eof()) {
+                getline(linie4, cztery);
+                cout << cztery << endl;
+            }
+            break;
+        case 0:
+            return;
+        default:
+            cout << "Bledny numer, wpisz ponownie..." << endl;
+            break;
+        }
+        linie1.close();
+        linie2.close();
+        linie3.close();
+        linie4.close();
+    }
+
+}
+
+void szyfrowaniePodstawieniowe(string& dane, string nazwaPod, string nazwaPodD) {
+    string szyfr;
+    string litery;
+    string szyfrD;
+    string literyD;
+    fstream plikPod;
+    fstream plikPodD;
+    plikPod.open(nazwaPod, ios::in);
+    if (plikPod.good() == true)
+    {
+        for (int i = 0; i < 26; i++) {
+            getline(plikPod, litery);
+            szyfr = szyfr + litery;
+        }
+
+    }
+    else
+        cout << "Zabroniony dostep do pliku" << endl;
+
+    plikPodD.open(nazwaPodD, ios::in);
+    if (plikPodD.good() == true)
+    {
+        for (int i = 0; i < 26; i++) {
+            getline(plikPodD, literyD);
+            szyfrD = szyfrD + literyD;
+        }
+
+    }
+    else
+        cout << "Zabroniony dostep do pliku" << endl;
+
+    for (int i = 0; i < dane.length(); i++)
+    {
+        if (dane[i] >= 'a' && dane[i] <= 'z') {
+            int k = dane[i] - 'a';
+            dane[i] = szyfr[k];
+        }
+        else if (dane[i] >= 'A' && dane[i] <= 'Z') {
+            int k = dane[i] - 'A';
+            dane[i] = szyfrD[k];
+        }
+        else
+            continue;
+    }
+    plikPod.close();
+    plikPodD.close();
+}
+
+void deszyfrowaniePodstawieniowe(string& dane, string nazwaPod, string nazwaPodD) {
+    string deszyfr;
+    string delitery;
+    string deszyfrD;
+    string deliteryD;
+    fstream deplikPod;
+    fstream deplikPodD;
+    deplikPod.open(nazwaPod, ios::in);
+    if (deplikPod.good() == true)
+    {
+        for (int i = 0; i < 26; i++) {
+            getline(deplikPod, delitery);
+            deszyfr = deszyfr + delitery;
+        }
+
+    }
+    else
+        cout << "Zabroniony dostep do pliku" << endl;
+
+    deplikPodD.open(nazwaPodD, ios::in);
+    if (deplikPodD.good() == true)
+    {
+        for (int i = 0; i < 26; i++) {
+            getline(deplikPodD, deliteryD);
+            deszyfrD = deszyfrD + deliteryD;
+        }
+
+    }
+    else
+        cout << "Zabroniony dostep do pliku" << endl;
+
+    for (int i = 0; i < dane.length(); i++)
+    {
+
+        string alfabet = "abcdefghijklmnopqrstuvwxyz";
+        string alfabetD = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if (dane[i] >= 'a' && dane[i] <= 'z') {
+            if (dane[i] == deszyfr[0])dane[i] = alfabet[0];  else if (dane[i] == deszyfr[5]) dane[i] = alfabet[5];
+            else if (dane[i] == deszyfr[1]) dane[i] = alfabet[1];  else if (dane[i] == deszyfr[6]) dane[i] = alfabet[6];
+            else if (dane[i] == deszyfr[2]) dane[i] = alfabet[2];  else if (dane[i] == deszyfr[7]) dane[i] = alfabet[7];
+            else if (dane[i] == deszyfr[3]) dane[i] = alfabet[3];  else if (dane[i] == deszyfr[8]) dane[i] = alfabet[8];
+            else if (dane[i] == deszyfr[4]) dane[i] = alfabet[4];  else if (dane[i] == deszyfr[9]) dane[i] = alfabet[9];
+            else if (dane[i] == deszyfr[10])dane[i] = alfabet[10];  else if (dane[i] == deszyfr[15]) dane[i] = alfabet[15];
+            else if (dane[i] == deszyfr[11]) dane[i] = alfabet[11];  else if (dane[i] == deszyfr[16]) dane[i] = alfabet[16];
+            else if (dane[i] == deszyfr[12]) dane[i] = alfabet[12];  else if (dane[i] == deszyfr[17]) dane[i] = alfabet[17];
+            else if (dane[i] == deszyfr[13]) dane[i] = alfabet[13];  else if (dane[i] == deszyfr[18]) dane[i] = alfabet[18];
+            else if (dane[i] == deszyfr[14]) dane[i] = alfabet[14];  else if (dane[i] == deszyfr[19]) dane[i] = alfabet[19];
+            else if (dane[i] == deszyfr[20]) dane[i] = alfabet[20];  else if (dane[i] == deszyfr[23]) dane[i] = alfabet[23];
+            else if (dane[i] == deszyfr[21]) dane[i] = alfabet[21];  else if (dane[i] == deszyfr[24]) dane[i] = alfabet[24];
+            else if (dane[i] == deszyfr[22]) dane[i] = alfabet[22];  else if (dane[i] == deszyfr[25]) dane[i] = alfabet[25];
+
+        }
+        if (dane[i] >= 'A' && dane[i] <= 'Z') {
+            if (dane[i] == deszyfrD[0])dane[i] = alfabetD[0];  else if (dane[i] == deszyfrD[5]) dane[i] = alfabetD[5];
+            else if (dane[i] == deszyfrD[1]) dane[i] = alfabetD[1];  else if (dane[i] == deszyfrD[6]) dane[i] = alfabetD[6];
+            else if (dane[i] == deszyfrD[2]) dane[i] = alfabetD[2];  else if (dane[i] == deszyfrD[7]) dane[i] = alfabetD[7];
+            else if (dane[i] == deszyfrD[3]) dane[i] = alfabetD[3];  else if (dane[i] == deszyfrD[8]) dane[i] = alfabetD[8];
+            else if (dane[i] == deszyfrD[4]) dane[i] = alfabetD[4];  else if (dane[i] == deszyfrD[9]) dane[i] = alfabetD[9];
+            else if (dane[i] == deszyfrD[10])dane[i] = alfabetD[10];  else if (dane[i] == deszyfrD[15]) dane[i] = alfabetD[15];
+            else if (dane[i] == deszyfrD[11]) dane[i] = alfabetD[11];  else if (dane[i] == deszyfrD[16]) dane[i] = alfabetD[16];
+            else if (dane[i] == deszyfrD[12]) dane[i] = alfabetD[12];  else if (dane[i] == deszyfrD[17]) dane[i] = alfabetD[17];
+            else if (dane[i] == deszyfrD[13]) dane[i] = alfabetD[13];  else if (dane[i] == deszyfrD[18]) dane[i] = alfabetD[18];
+            else if (dane[i] == deszyfrD[14]) dane[i] = alfabetD[14];  else if (dane[i] == deszyfrD[19]) dane[i] = alfabetD[19];
+            else if (dane[i] == deszyfrD[20]) dane[i] = alfabetD[20];  else if (dane[i] == deszyfrD[23]) dane[i] = alfabetD[23];
+            else if (dane[i] == deszyfrD[21]) dane[i] = alfabetD[21];  else if (dane[i] == deszyfrD[24]) dane[i] = alfabetD[24];
+            else if (dane[i] == deszyfrD[22]) dane[i] = alfabetD[22];  else if (dane[i] == deszyfrD[25]) dane[i] = alfabetD[25];
+        }
+
+        else
+            continue;
+    }
+    deplikPod.close();
+    deplikPodD.close();
+}
+
+
+void plik(int klucz, int metoda) {
+    string nazwaPliku1;
+    cout << "Wprowadz nazwe pliku wejsciowego" << endl;
+    cin >> nazwaPliku1;
+    fstream plikWe;
+    plikWe.open(nazwaPliku1, ios::in);
+    if (plikWe.good() == true)
+    {
+        cout << "Uzyskano dostep do pliku!" << endl;
+        string dane;
+        string nazwaPliku2;
+        cout << "Wprowadz nazwe pliku wyjsciowego" << endl;
+        cin >> nazwaPliku2;
+        fstream plikWy(nazwaPliku2, ios::out);
+        if (metoda == 1 || metoda == 2) {
+            while (!plikWe.eof()) {
+                getline(plikWe, dane);
+                if (metoda == 1)
+                    szyfrujPlik(dane, klucz);
+                if (metoda == 2)
+                    deszyfrujPlik(dane, klucz);
+                plikWy << dane << endl;
+                system("cls");
+            }
+            wyswietlanieLinii(nazwaPliku1, nazwaPliku2);
+        }
+        if (metoda == 3 || metoda == 4) {
+            string nazwaPod;
+            string nazwaPodD;
+            cout << "Wprowadz nazwe pliku podstawieniowego dla malych liter" << endl << endl;
+            cin >> nazwaPod;
+            cout << "Wprowadz nazwe pliku podstawieniowego dla duzych liter" << endl << endl;
+            cin >> nazwaPodD;
+            while (!plikWe.eof()) {
+                getline(plikWe, dane);
+                if (metoda == 3) {
+                    szyfrowaniePodstawieniowe(dane, nazwaPod, nazwaPodD);
+                }
+                if (metoda == 4) {
+                    deszyfrowaniePodstawieniowe(dane, nazwaPod, nazwaPodD);
+                }
+                plikWy << dane << endl;
+
+                system("cls");
+            }
+            wyswietlanieLinii(nazwaPliku1, nazwaPliku2);
+        }
+
+        plikWy.close();
+        plikWe.close();
+    }
+    else cout << "Dostep do pliku zostal zabroniony!" << endl;
+
+}
+
+void wyswietlanie(int klucz, int tryb) {
+    int metoda;
+    if (tryb == 1) {
+        cout << "1- Szyfrowanie" << endl << "2- Deszyfrowanie" << endl;
+        cin >> metoda;
+        cout << endl << endl;
+        while (metoda != 1 && metoda != 2) {
+            cout << "Niepoprawny numer metody, wpisz ponownie" << endl;
+            cin >> metoda;
+        }
+        system("cls");
+    }
+    else if (tryb == 2) {
+        cout << "3- Szyfrowanie" << endl << "4- Deszyfrowanie" << endl;
+        cin >> metoda;
+        cout << endl << endl;
+        while (metoda != 3 && metoda != 4) {
+            cout << "Niepoprawny numer metody, wpisz ponownie" << endl;
+            cin >> metoda;
+        }
+        system("cls");
+    }
+    plik(klucz, metoda);
+
+}
+
+
+int main() {
+
+    int klucz;
+    int tryb;
+    cout << "Wybor szyfru:" << endl << "1- Cezara" << endl << "2- Podstawieniowy" << endl;
+    cin >> tryb;
+    while (tryb != 1 && tryb != 2) {
+        cout << "Bledny numer, wpisz ponownie" << endl;
+        cin >> tryb;
+    }
+    if (tryb == 1) {
+        cout << "Jakie chcesz miec przesuniecie w szyfrze?" << endl;
+        cin >> klucz;
+        system("cls");
+    }
+    else if (tryb == 2) {
+        klucz = 0;
+    }
+    wyswietlanie(klucz, tryb);
+
+    return 0;
+}
